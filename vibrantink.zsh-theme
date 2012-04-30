@@ -25,11 +25,11 @@ local second_line_prefix='↳'
 local return_line_prefix='↵'
 local env_prefix='‹'
 local env_suffix='›'
-local vcs_dirty='!'
-local vcs_separator='⋆'
+local vcs_dirty='✘'
+local vcs_separator='/'
 local git='★'
 local mercurial='☿'
-local venv='☒'
+local venv='▣'
 local rvm='♦'
 
 # Load some modules
@@ -78,10 +78,10 @@ fi
 # Ruby Ruby Ruby Ruby!
 local rvm_ruby=''
 if which rvm-prompt &> /dev/null; then
-    rvm_ruby='$ruby_red$env_prefix $rvm $(rvm-prompt i v g s)$env_suffix$reset '
+    rvm_ruby='$ruby_red$env_prefix$rvm $(rvm-prompt i v g s)$env_suffix$reset '
 else
     if which rbenv &> /dev/null; then
-        rvm_ruby='$ruby_red$env_prefix $rvm $(rbenv version | sed -e "s/ (set.*$//")$env_suffix$reset '
+        rvm_ruby='$ruby_red$env_prefix$rvm $(rbenv version | sed -e "s/ (set.*$//")$env_suffix$reset '
     fi
 fi
 
@@ -94,7 +94,7 @@ local current_dir='$bold$yellow${PWD/#$HOME/~}$reset'
 local git_branch='$(git_prompt_info)$reset'
 
 ZSH_THEME_GIT_PROMPT_PREFIX=""
-ZSH_THEME_GIT_PROMPT_DIRTY=" !"
+ZSH_THEME_GIT_PROMPT_DIRTY=" $vcs_dirty"
 ZSH_THEME_GIT_PROMPT_SUFFIX="$env_suffix$reset"
 
 add-zsh-hook precmd build_prompt
@@ -111,7 +111,7 @@ build_prompt () {
     # Grab the name of the current git repository, if we're in one
     [ $(git status &>/dev/null) $? -eq "0" ] && {
         git_name=$(git rev-parse --show-toplevel)
-        git_repo=$(basename ${git_name})" "$vcs_separator" "
+        git_repo=$(basename ${git_name})$vcs_separator
         local git_status="$electric_green$env_prefix$git $git_repo$git_branch"
     }
     
@@ -122,7 +122,7 @@ build_prompt () {
         hg_name=$(basename "$(hg root)")
         hg_branch=$(hg branch)
         [ "`hg status`" != "" ] && hg_dirty=" "$vcs_dirty || hg_dirty=''
-        hg_repo=$hg_name" "$vcs_separator" "$hg_branch
+        hg_repo=$hg_name$vcs_separator$hg_branch
         local hg_status='$electric_green$env_prefix$mercurial $hg_repo$hg_dirty$env_suffix$reset '
     }
 
